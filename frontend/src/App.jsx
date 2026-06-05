@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Streams from './pages/Streams';
 import Subjects from './pages/Subjects';
+import Students from './pages/Students';
+
 
 function App() {
   return (
@@ -11,12 +13,15 @@ function App() {
           <Link to="/" className="text-blue-600 font-semibold">Home</Link>
           <Link to="/streams" className="text-blue-600">Class Streams</Link>
           <Link to="/subjects" className="text-blue-600">Subjects</Link>
+          <Link to="/students" className="text-blue-600">Students</Link>
+
         </nav>
         <div className="container mx-auto p-4">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/streams" element={<Streams />} />
             <Route path="/subjects" element={<Subjects />} />
+            <Route path="/students" element={<Students />} />
           </Routes>
         </div>
       </div>
