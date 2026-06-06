@@ -4,6 +4,8 @@ import Streams from './pages/Streams';
 import Subjects from './pages/Subjects';
 import Students from './pages/Students';
 import Scores from './pages/Scores';
+import StudentPerformance from './pages/StudentPerformance';
+import ClassPerformance from './pages/ClassPerformance';
 
 
 
@@ -17,6 +19,8 @@ function App() {
           <Link to="/subjects" className="text-blue-600">Subjects</Link>
           <Link to="/students" className="text-blue-600">Students</Link>
           <Link to="/scores" className="text-blue-600">Scores</Link>
+          <Link to="/student-performance" className="text-blue-600">Student Performance</Link>
+          <Link to="/class-performance" className="text-blue-600">Class Performance</Link>
 
 
         </nav>
@@ -27,6 +31,8 @@ function App() {
             <Route path="/subjects" element={<Subjects />} />
             <Route path="/students" element={<Students />} />
             <Route path="/scores" element={<Scores />} />
+            <Route path="/student-performance" element={<StudentPerformance />} />
+            <Route path="/class-performance" element={<ClassPerformance />} />
           </Routes>
         </div>
       </div>
