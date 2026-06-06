@@ -21,10 +21,11 @@ function Layout({ children }) {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    // Sleek gradient background: from slate-100 to blue-100/indigo-100 for a calm, professional look
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/40">
       {/* Mobile header */}
-      <div className="lg:hidden bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-20">
-        <h1 className="text-xl font-bold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent">
+      <div className="lg:hidden bg-white/80 backdrop-blur-sm shadow-md p-4 flex justify-between items-center sticky top-0 z-20">
+        <h1 className="text-xl font-bold bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">
           Ikonex Academy
         </h1>
         <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-gray-600 focus:outline-none">
@@ -37,12 +38,12 @@ function Layout({ children }) {
       <div className="flex">
         {/* Sidebar (desktop) */}
         <aside className={`
-          fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto
+          fixed inset-y-0 left-0 z-30 w-64 bg-white/95 backdrop-blur-sm shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto
           flex flex-col
           ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
         `}>
-          <div className="p-5 border-b flex-shrink-0">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent">
+          <div className="p-5 border-b border-gray-200 flex-shrink-0">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">
               Ikonex Academy
             </h1>
             <p className="text-xs text-gray-500 mt-1">Student Management System</p>
@@ -67,7 +68,7 @@ function Layout({ children }) {
             ))}
           </nav>
           
-          <div className="p-4 border-t text-xs text-gray-400 text-center flex-shrink-0">
+          <div className="p-4 border-t border-gray-200 text-xs text-gray-400 text-center flex-shrink-0">
             © 2025 Ikonex Academy
           </div>
         </aside>
