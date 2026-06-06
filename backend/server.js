@@ -11,6 +11,7 @@ app.use(express.json());
 app.use('/api/streams', require('./routes/streams'));
 app.use('/api/subjects', require('./routes/subjects'));
 app.use('/api/students', require('./routes/students'));
+app.use('/api/assessments', require('./routes/assessments'));
 
 // Health check
 app.get('/api/health', (req, res) => {

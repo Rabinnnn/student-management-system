@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import Streams from './pages/Streams';
 import Subjects from './pages/Subjects';
 import Students from './pages/Students';
+import Scores from './pages/Scores';
+
 
 
 function App() {
@@ -14,6 +16,8 @@ function App() {
           <Link to="/streams" className="text-blue-600">Class Streams</Link>
           <Link to="/subjects" className="text-blue-600">Subjects</Link>
           <Link to="/students" className="text-blue-600">Students</Link>
+          <Link to="/scores" className="text-blue-600">Scores</Link>
+
 
         </nav>
         <div className="container mx-auto p-4">
@@ -22,6 +26,7 @@ function App() {
             <Route path="/streams" element={<Streams />} />
             <Route path="/subjects" element={<Subjects />} />
             <Route path="/students" element={<Students />} />
+            <Route path="/scores" element={<Scores />} />
           </Routes>
         </div>
       </div>
