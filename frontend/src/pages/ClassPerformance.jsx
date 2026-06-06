@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import ClassReportTemplate from '../components/ClassReportTemplate';
+import { generateClassReport } from '../utils/pdfGenerator';
 
 function ClassPerformance() {
   const [streams, setStreams] = useState([]);
@@ -9,6 +11,7 @@ function ClassPerformance() {
   const [performance, setPerformance] = useState(null);
   const [loading, setLoading] = useState(false);
   const [viewType, setViewType] = useState('subject'); // 'subject' or 'overall'
+  const [streamName, setStreamName] = useState('');
 
   const fetchStreams = async () => {
     const res = await fetch('/api/streams');
@@ -48,6 +51,12 @@ function ClassPerformance() {
     fetchStreams();
     fetchSubjects();
   }, []);
+
+  useEffect(() => {
+    // Update stream name when selectedStream changes
+    const stream = streams.find(s => s.id == selectedStream);
+    setStreamName(stream ? stream.name : '');
+  }, [selectedStream, streams]);
 
   useEffect(() => {
     setPerformance(null);
@@ -110,58 +119,85 @@ function ClassPerformance() {
       </div>
 
       {loading && <p>Loading...</p>}
-      {performance && (
-        <div className="overflow-x-auto">
-          <h3 className="font-bold mb-2">
-            {viewType === 'subject' 
-              ? `${performance.subject_name} - ${performance.term}` 
-              : `Overall Class Ranking - ${performance.term}`}
-          </h3>
-          <table className="w-full border">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="p-2">Position</th>
-                <th className="p-2">Admission No</th>
-                <th className="p-2">Student Name</th>
-                {viewType === 'subject' ? (
-                  <>
-                    <th className="p-2">Exam</th>
-                    <th className="p-2">Continuous</th>
-                    <th className="p-2">Total</th>
-                  </>
-                ) : (
-                  <>
-                    <th className="p-2">Total Marks</th>
-                    <th className="p-2">Average</th>
-                  </>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {performance.students.map((student, idx) => (
-                <tr key={student.student_id} className="border-t">
-                  <td className="p-2 font-semibold">{student.position}</td>
-                  <td className="p-2">{student.admission_no}</td>
-                  <td className="p-2">{student.student_name}</td>
+      {performance && performance.students && performance.students.length > 0 && (
+        <>
+          <div className="overflow-x-auto">
+            <h3 className="font-bold mb-2">
+              {viewType === 'subject' 
+                ? `${performance.subject_name} - ${performance.term}` 
+                : `Overall Class Ranking - ${performance.term}`}
+            </h3>
+            <table className="w-full border">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="p-2">Position</th>
+                  <th className="p-2">Admission No</th>
+                  <th className="p-2">Student Name</th>
                   {viewType === 'subject' ? (
                     <>
-                      <td className="p-2">{student.exam_score}</td>
-                      <td className="p-2">{student.continuous_score}</td>
-                      <td className="p-2 font-semibold">{student.total_score}</td>
+                      <th className="p-2">Exam</th>
+                      <th className="p-2">Continuous</th>
+                      <th className="p-2">Total</th>
                     </>
                   ) : (
                     <>
-                      <td className="p-2">{student.total_marks}</td>
-                      <td className="p-2">{student.average}</td>
+                      <th className="p-2">Total Marks</th>
+                      <th className="p-2">Average</th>
                     </>
                   )}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {performance.students.map((student, idx) => (
+                  <tr key={student.student_id} className="border-t">
+                    <td className="p-2 font-semibold">{student.position}</td>
+                    <td className="p-2">{student.admission_no}</td>
+                    <td className="p-2">{student.student_name}</td>
+                    {viewType === 'subject' ? (
+                      <>
+                        <td className="p-2">{student.exam_score}</td>
+                        <td className="p-2">{student.continuous_score}</td>
+                        <td className="p-2 font-semibold">{student.total_score}</td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="p-2">{student.total_marks}</td>
+                        <td className="p-2">{student.average}</td>
+                      </>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* PDF Download Button */}
+          <div className="mt-4">
+            <button
+              onClick={() => generateClassReport(
+                { stream_name: streamName },
+                performance,
+                'class-report-template'
+              )}
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            >
+              Download Class Report (PDF)
+            </button>
+          </div>
+
+          {/* Hidden PDF Template */}
+          <div id="class-report-template" style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+            <ClassReportTemplate
+              className={streamName}
+              term={performance.term}
+              students={performance.students}
+              viewType={viewType}
+              subjectName={viewType === 'subject' ? performance.subject_name : null}
+            />
+          </div>
+        </>
       )}
-      {!loading && selectedStream && !performance && (
+      {!loading && selectedStream && (!performance || !performance.students || performance.students.length === 0) && (
         <p className="text-gray-500">No performance data available for the selected criteria.</p>
       )}
     </div>

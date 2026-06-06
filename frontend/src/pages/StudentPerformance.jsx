@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import ReportCardTemplate from '../components/ReportCardTemplate';
+import { generateStudentReportCard } from '../utils/pdfGenerator';
 
 function StudentPerformance() {
   const [streams, setStreams] = useState([]);
@@ -8,6 +10,7 @@ function StudentPerformance() {
   const [selectedTerm, setSelectedTerm] = useState('Term 1 2025');
   const [performance, setPerformance] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [studentInfo, setStudentInfo] = useState(null);
 
   const fetchStreams = async () => {
     const res = await fetch('/api/streams');
@@ -37,6 +40,13 @@ function StudentPerformance() {
     }
   };
 
+  const fetchStudentInfo = async (studentId) => {
+    if (!studentId) return;
+    const res = await fetch(`/api/students/${studentId}`);
+    const data = await res.json();
+    setStudentInfo(data);
+  };
+
   useEffect(() => {
     fetchStreams();
   }, []);
@@ -45,11 +55,16 @@ function StudentPerformance() {
     fetchStudentsByStream(selectedStream);
     setSelectedStudent('');
     setPerformance(null);
+    setStudentInfo(null);
   }, [selectedStream]);
 
   useEffect(() => {
     if (selectedStudent && selectedTerm) fetchPerformance();
   }, [selectedStudent, selectedTerm]);
+
+  useEffect(() => {
+    if (selectedStudent) fetchStudentInfo(selectedStudent);
+  }, [selectedStudent]);
 
   return (
     <div>
@@ -130,9 +145,26 @@ function StudentPerformance() {
               </tbody>
             </table>
           </div>
+
+          {/* PDF Download Button */}
+          <div className="mt-4">
+            <button
+              onClick={() => generateStudentReportCard(studentInfo, performance, 'report-card-template')}
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            >
+              Download Report Card (PDF)
+            </button>
+          </div>
         </div>
       )}
       {!loading && selectedStudent && !performance && <p className="text-gray-500">No scores recorded for this student in the selected term.</p>}
+
+      {/* Hidden PDF Template */}
+      {performance && studentInfo && (
+        <div id="report-card-template" style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+          <ReportCardTemplate student={studentInfo} performance={performance} />
+        </div>
+      )}
     </div>
   );
 }
