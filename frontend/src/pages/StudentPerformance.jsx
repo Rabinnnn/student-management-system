@@ -11,8 +11,8 @@ function StudentPerformance() {
   const [performance, setPerformance] = useState(null);
   const [loading, setLoading] = useState(false);
   const [studentInfo, setStudentInfo] = useState(null);
-  const [subjectFilter, setSubjectFilter] = useState(''); // subject filter
-  const [editingScore, setEditingScore] = useState(null); // { subject_id, subject_name, exam_score, continuous_score }
+  const [subjectFilter, setSubjectFilter] = useState('');
+  const [editingScore, setEditingScore] = useState(null);
   const [editExam, setEditExam] = useState('');
   const [editContinuous, setEditContinuous] = useState('');
   const [editMessage, setEditMessage] = useState('');
@@ -78,9 +78,8 @@ function StudentPerformance() {
       })
     });
     if (res.ok) {
-      setEditMessage('Score updated successfully!');
+      setEditMessage('Score updated!');
       setTimeout(() => setEditMessage(''), 2000);
-      // Refresh performance data
       await fetchPerformance();
       setEditingScore(null);
     } else {
@@ -108,132 +107,108 @@ function StudentPerformance() {
     if (selectedStudent) fetchStudentInfo(selectedStudent);
   }, [selectedStudent]);
 
-  // Filter subjects if subjectFilter is set
-  const filteredSubjects = performance?.subjects?.filter(sub => 
-    !subjectFilter || sub.subject_id == subjectFilter
-  ) || [];
-
-  // Unique subjects for filter dropdown
+  const filteredSubjects = performance?.subjects?.filter(sub => !subjectFilter || sub.subject_id == subjectFilter) || [];
   const allSubjects = performance?.subjects || [];
 
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-4">Student Performance</h2>
-      <div className="grid md:grid-cols-4 gap-4 mb-6">
-        <div>
-          <label className="block font-medium mb-1">Term</label>
-          <input
-            type="text"
-            value={selectedTerm}
-            onChange={(e) => setSelectedTerm(e.target.value)}
-            className="border rounded px-3 py-2 w-full"
-          />
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-800">Student Performance</h1>
+        <p className="text-gray-500 mt-1">View individual student results, subject-wise scores, and download report card</p>
+      </div>
+
+      <div className="card">
+        <div className="card-header">
+          <h2 className="text-lg font-semibold text-gray-700">Select Criteria</h2>
         </div>
-        <div>
-          <label className="block font-medium mb-1">Class Stream</label>
-          <select
-            value={selectedStream}
-            onChange={(e) => setSelectedStream(e.target.value)}
-            className="border rounded px-3 py-2 w-full"
-          >
-            <option value="">Select Stream</option>
-            {streams.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
-        </div>
-        <div>
-          <label className="block font-medium mb-1">Student</label>
-          <select
-            value={selectedStudent}
-            onChange={(e) => setSelectedStudent(e.target.value)}
-            className="border rounded px-3 py-2 w-full"
-            disabled={!selectedStream}
-          >
-            <option value="">Select Student</option>
-            {students.map(s => <option key={s.id} value={s.id}>{s.name} ({s.admission_no})</option>)}
-          </select>
-          {!selectedStream && <p className="text-sm text-amber-600">Select stream first</p>}
-        </div>
-        <div>
-          <label className="block font-medium mb-1">Filter by Subject</label>
-          <select
-            value={subjectFilter}
-            onChange={(e) => setSubjectFilter(e.target.value)}
-            className="border rounded px-3 py-2 w-full"
-            disabled={!performance}
-          >
-            <option value="">All Subjects</option>
-            {allSubjects.map(sub => (
-              <option key={sub.subject_id} value={sub.subject_id}>{sub.subject_name}</option>
-            ))}
-          </select>
+        <div className="card-body">
+          <div className="grid md:grid-cols-4 gap-4">
+            <div>
+              <label className="label">Term</label>
+              <input type="text" value={selectedTerm} onChange={(e) => setSelectedTerm(e.target.value)} className="input" />
+            </div>
+            <div>
+              <label className="label">Class Stream</label>
+              <select value={selectedStream} onChange={(e) => setSelectedStream(e.target.value)} className="input">
+                <option value="">Select Stream</option>
+                {streams.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="label">Student</label>
+              <select value={selectedStudent} onChange={(e) => setSelectedStudent(e.target.value)} className="input" disabled={!selectedStream}>
+                <option value="">Select Student</option>
+                {students.map(s => <option key={s.id} value={s.id}>{s.name} ({s.admission_no})</option>)}
+              </select>
+              {!selectedStream && <p className="text-xs text-amber-600 mt-1">Select stream first</p>}
+            </div>
+            <div>
+              <label className="label">Filter by Subject</label>
+              <select value={subjectFilter} onChange={(e) => setSubjectFilter(e.target.value)} className="input" disabled={!performance}>
+                <option value="">All Subjects</option>
+                {allSubjects.map(sub => <option key={sub.subject_id} value={sub.subject_id}>{sub.subject_name}</option>)}
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
-      {loading && <p>Loading...</p>}
+      {loading && <div className="text-center py-8">Loading performance data...</div>}
       {performance && (
-        <div className="space-y-4">
-          {/* Summary Card */}
-          <div className="bg-gray-50 p-4 rounded-lg border">
-            <h3 className="font-bold text-lg mb-2">Summary</h3>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-              <div><span className="font-medium">Total Marks:</span> {performance.total_marks}</div>
-              <div><span className="font-medium">Average:</span> {performance.average_score}</div>
-              <div><span className="font-medium">Grade:</span> {performance.grade}</div>
-              <div><span className="font-medium">Remark:</span> {performance.remark}</div>
-              <div><span className="font-medium">Class Position:</span> {performance.overall_position || 'N/A'}</div>
+        <div className="space-y-6">
+          <div className="card">
+            <div className="card-header">
+              <h2 className="text-lg font-semibold text-gray-700">Summary</h2>
+            </div>
+            <div className="card-body">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div><span className="font-semibold">Total Marks:</span> {performance.total_marks}</div>
+                <div><span className="font-semibold">Average:</span> {performance.average_score}</div>
+                <div><span className="font-semibold">Grade:</span> <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">{performance.grade}</span></div>
+                <div><span className="font-semibold">Remark:</span> {performance.remark}</div>
+                <div><span className="font-semibold">Class Position:</span> {performance.overall_position || 'N/A'}</div>
+              </div>
             </div>
           </div>
 
-          {/* Subjects Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full border">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="p-2">Subject</th>
-                  <th className="p-2">Exam Score</th>
-                  <th className="p-2">Continuous</th>
-                  <th className="p-2">Total</th>
-                  <th className="p-2">Position</th>
-                  <th className="p-2">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredSubjects.map(sub => (
-                  <tr key={sub.subject_id} className="border-t">
-                    <td className="p-2">{sub.subject_name}</td>
-                    <td className="p-2">{sub.exam_score ?? '-'}</td>
-                    <td className="p-2">{sub.continuous_score ?? '-'}</td>
-                    <td className="p-2 font-semibold">{sub.total_score ?? '-'}</td>
-                    <td className="p-2">{sub.position ?? '-'}</td>
-                    <td className="p-2">
-                      <button 
-                        onClick={() => handleEditScore(sub)}
-                        className="text-blue-600 hover:underline"
-                      >
-                        Edit
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {filteredSubjects.length === 0 && (
-                  <tr><td colSpan="6" className="p-4 text-center text-gray-500">No subjects match filter</td></tr>
-                )}
-              </tbody>
-            </table>
+          <div className="card">
+            <div className="card-header">
+              <h2 className="text-lg font-semibold text-gray-700">Subject Scores</h2>
+            </div>
+            <div className="table-container">
+              <table className="table">
+                <thead>
+                  <tr><th>Subject</th><th>Exam</th><th>Continuous</th><th>Total</th><th>Position</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                  {filteredSubjects.map(sub => (
+                    <tr key={sub.subject_id}>
+                      <td>{sub.subject_name}</td>
+                      <td>{sub.exam_score ?? '-'}</td>
+                      <td>{sub.continuous_score ?? '-'}</td>
+                      <td className="font-semibold">{sub.total_score ?? '-'}</td>
+                      <td>{sub.position ?? '-'}</td>
+                      <td><button onClick={() => handleEditScore(sub)} className="text-blue-600 hover:text-blue-800">Edit</button></td>
+                    </tr>
+                  ))}
+                  {filteredSubjects.length === 0 && <tr><td colSpan="6" className="text-center py-6">No subjects match filter.</td></tr>}
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          {/* PDF Download Button */}
-          <div className="mt-4">
-            <button
-              onClick={() => generateStudentReportCard(studentInfo, performance, 'report-card-template')}
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-            >
+          <div className="flex justify-end">
+            <button onClick={() => generateStudentReportCard(studentInfo, performance, 'report-card-template')} className="btn-success">
               Download Report Card (PDF)
             </button>
           </div>
         </div>
       )}
-      {!loading && selectedStudent && !performance && <p className="text-gray-500">No scores recorded for this student in the selected term.</p>}
+      {!loading && selectedStudent && !performance && (
+        <div className="card">
+          <div className="card-body text-center text-gray-500 py-8">No scores recorded for this student in the selected term.</div>
+        </div>
+      )}
 
       {/* Hidden PDF Template */}
       {performance && studentInfo && (
@@ -245,36 +220,26 @@ function StudentPerformance() {
       {/* Edit Score Modal */}
       {editingScore && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <h3 className="text-lg font-bold mb-2">Edit Score</h3>
-            <p><strong>Student:</strong> {studentInfo?.name}</p>
-            <p><strong>Subject:</strong> {editingScore.subject_name}</p>
-            <p><strong>Term:</strong> {selectedTerm}</p>
-            <div className="mt-4 space-y-3">
+          <div className="bg-white rounded-xl max-w-md w-full">
+            <div className="border-b px-6 py-4">
+              <h3 className="text-xl font-bold">Edit Score</h3>
+            </div>
+            <div className="p-6 space-y-4">
+              <p><strong>Student:</strong> {studentInfo?.name}</p>
+              <p><strong>Subject:</strong> {editingScore.subject_name}</p>
+              <p><strong>Term:</strong> {selectedTerm}</p>
               <div>
-                <label className="block text-sm font-medium">Exam Score (0-100)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={editExam}
-                  onChange={(e) => setEditExam(e.target.value)}
-                  className="border rounded px-3 py-2 w-full"
-                />
+                <label className="label">Exam Score (0-100)</label>
+                <input type="number" step="0.01" value={editExam} onChange={(e) => setEditExam(e.target.value)} className="input" />
               </div>
               <div>
-                <label className="block text-sm font-medium">Continuous Assessment (0-100)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={editContinuous}
-                  onChange={(e) => setEditContinuous(e.target.value)}
-                  className="border rounded px-3 py-2 w-full"
-                />
+                <label className="label">Continuous Assessment (0-100)</label>
+                <input type="number" step="0.01" value={editContinuous} onChange={(e) => setEditContinuous(e.target.value)} className="input" />
               </div>
               {editMessage && <p className={`text-sm ${editMessage.includes('Error') ? 'text-red-600' : 'text-green-600'}`}>{editMessage}</p>}
-              <div className="flex gap-2 pt-2">
-                <button onClick={saveEditedScore} className="bg-blue-600 text-white px-4 py-2 rounded">Save Changes</button>
-                <button onClick={() => setEditingScore(null)} className="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
+              <div className="flex gap-3 pt-2">
+                <button onClick={saveEditedScore} className="btn-primary">Save Changes</button>
+                <button onClick={() => setEditingScore(null)} className="btn-secondary">Cancel</button>
               </div>
             </div>
           </div>
