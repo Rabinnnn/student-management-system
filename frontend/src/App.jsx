@@ -22,8 +22,7 @@ function Layout({ children }) {
 
   return (
     // Sleek gradient background: from slate-100 to blue-100/indigo-100 for a calm, professional look
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/40">
-      {/* Mobile header */}
+<div className="min-h-screen bg-gradient-to-br from-slate-200 via-blue-100 to-indigo-100">      {/* Mobile header */}
       <div className="lg:hidden bg-white/80 backdrop-blur-sm shadow-md p-4 flex justify-between items-center sticky top-0 z-20">
         <h1 className="text-xl font-bold bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">
           Ikonex Academy
